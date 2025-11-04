@@ -22,14 +22,44 @@ jobs:
     - name: Setup Node (pre-check)
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 18
         cache: 'npm'
     
+    - name: Env info
+      run: |
+        node -v
+        npm -v || true
+        yarn -v || true
+        pnpm -v || true
+        ls -la
+    
+    - name: Detect package manager
+      run: |
+        if [ -f pnpm-lock.yaml ]; then
+          echo "PM=pnpm" >> $GITHUB_ENV
+          echo "SETUP=corepack enable && corepack prepare pnpm@latest --activate" >> $GITHUB_ENV
+          echo "INSTALL=pnpm install --frozen-lockfile" >> $GITHUB_ENV
+          echo "BUILD=pnpm build" >> $GITHUB_ENV
+        elif [ -f yarn.lock ]; then
+          echo "PM=yarn" >> $GITHUB_ENV
+          echo "SETUP=corepack enable" >> $GITHUB_ENV
+          echo "INSTALL=yarn install --frozen-lockfile" >> $GITHUB_ENV
+          echo "BUILD=yarn build" >> $GITHUB_ENV
+        else
+          echo "PM=npm" >> $GITHUB_ENV
+          echo "SETUP=:" >> $GITHUB_ENV
+          echo "INSTALL=npm ci --no-audit --no-fund --verbose" >> $GITHUB_ENV
+          echo "BUILD=npm run build --loglevel verbose" >> $GITHUB_ENV
+        fi
+    
+    - name: Prepare package manager
+      run: $SETUP
+    
     - name: Install dependencies (pre-check)
-      run: npm ci
+      run: $INSTALL
     
     - name: Build (pre-check, to surface real error)
-      run: npm run build
+      run: $BUILD
       env:
         CI: false
     
