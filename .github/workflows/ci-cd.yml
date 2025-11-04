@@ -29,11 +29,14 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     
+    - name: Set lowercase image repo
+      run: echo "IMAGE_REPO=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+    
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ghcr.io/${{ github.repository }}
+        images: ${{ env.IMAGE_REPO }}
         tags: |
           type=raw,value=latest
           type=sha,prefix={{branch}}-
@@ -45,8 +48,8 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
-        cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
+        cache-from: type=registry,ref=${{ env.IMAGE_REPO }}:buildcache
+        cache-to: type=registry,ref=${{ env.IMAGE_REPO }}:buildcache,mode=max
 
   deploy:
     name: Deploy to VPS
