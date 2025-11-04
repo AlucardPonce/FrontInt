@@ -34,6 +34,13 @@ jobs:
         echo "Package.json scripts:"
         cat package.json | grep -A 10 '"scripts"'
 
+    - name: Debug paths (case check)
+      run: |
+        echo "Tree src/pages:"
+        find src/pages -maxdepth 2 -type f -print 2>/dev/null || true
+        echo "routes.jsx (primeras líneas):"
+        head -n 120 src/routes.jsx || true
+
     - name: Install dependencies
       run: |
         rm -rf node_modules package-lock.json
