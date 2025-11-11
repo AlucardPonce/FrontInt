@@ -4,7 +4,7 @@ import axios from 'axios';
 const api = axios.create({
   //baseURL: 'https://proyecto-back-integradora.onrender.com/api',
   //baseURL: 'http://localhost:3000/api', // Descomenta para desarrollo local
-  baseURL: 'http://64.227.90.188:3000/api',
+  baseURL: 'http://64.227.90.188:3001/api',
   timeout: 60000, // 60 segundos para dar tiempo a que Render despierte
   headers: {
     'Content-Type': 'application/json',
